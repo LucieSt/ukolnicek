@@ -1,8 +1,6 @@
-
 const apiUrl = "https://apps.kodim.cz/daweb/trening-api/apis/tasks-api/tasks"
 
 const checkElm = document.getElementById("checkbox-undone");
-let checkCondition = false
 
 const Task = (props) => {
     const { id, name, due, done } = props;
@@ -13,7 +11,6 @@ const Task = (props) => {
     }
 
     return `
-    
     <div class="task" id="${id}">
         <div class="task__body">
             <div class="task__name">${name}</div>
@@ -21,40 +18,20 @@ const Task = (props) => {
         </div>
         <div class="task__done">${doneSign}</div>
     </div>
-
     `;
 }
 
-const getData = () => {
-
-    const renderTasks = (data) => {
-
-        const tasksElm = document.querySelector(".todo__tasks");
-        tasksElm.innerHTML = data.map((item) => {
-                if (checkCondition) {
-                    if (!item.done) {
-                        return Task(item);
-                    }
-                }
-                else {
-                    return Task(item);
-                }
-        }).join('');
-    }
-
-    fetch(apiUrl).then((response) => response.json()).then(renderTasks);
-
+const renderTasks = (data) => {
+    const tasksElm = document.querySelector(".todo__tasks");
+    tasksElm.innerHTML = data.map((item) => Task(item)).join('');
 }
 
-getData()
-
+fetch(apiUrl).then((response) => response.json()).then(renderTasks);
 
 checkElm.addEventListener('change', function() {
     if (this.checked) {
-      checkCondition = true
-      getData()
+      fetch("https://apps.kodim.cz/daweb/trening-api/apis/tasks-api/tasks?done=false").then((response) => response.json()).then(renderTasks);
     } else {
-      checkCondition = false
-      getData()
+      fetch(apiUrl).then((response) => response.json()).then(renderTasks);
     }
-  });
+});
